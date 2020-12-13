@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import PopupApp from './PopupApp';
-import MapApp from './MapApp';
+import PopupApp from './popup/PopupApp';
+import MapApp from './map/MapApp';
 import reportWebVitals from './reportWebVitals';
 
 if (inIframe () ) {
