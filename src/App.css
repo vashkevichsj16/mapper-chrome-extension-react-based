@@ -36,3 +36,20 @@
     transform: rotate(360deg);
   }
 }
+
+.mapRow {
+  height: 30px
+}
+.mapCol{
+  height: 28px;
+  width: 28px;
+  border: 1px solid black;
+  display: inline-grid;
+  font-size: 10px;
+}
+
+.MapContainer * {
+  font-family: Roboto, serif;
+  font-size: 9px;
+  color: white;
+}
