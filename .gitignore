@@ -27,3 +27,6 @@ yarn-error.log*
 /.eslintcache
 /.idea/mapper-chrome-extension-react-based.iml
 /.idea/modules.xml
+/.idea/.gitignore
+/.prettierrc
+/.idea/kartograf-webpack.iml

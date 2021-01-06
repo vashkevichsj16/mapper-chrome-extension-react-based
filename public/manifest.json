@@ -4,26 +4,29 @@
   "version": "0.0.1",
   "description": "Game helper",
   "icons": {
-    "16": "images/16x16.png",
-    "48": "images/48x48.png",
-    "128": "images/128x128.png"
+    "16": "icons/16x16.png",
+    "48": "icons/48x48.png",
+    "128": "icons/128x128.png"
   },
   "browser_action": {
     "default_title": "Helper",
-    "default_popup": "index.html"
+    "default_popup": "popup/popup.html"
   },
   "content_scripts": [
     {
       "matches": ["https://www.fantasyland.ru/main*"],
-      "js": ["js/in-content.js"]
+      "js": ["./inContent/content.js"]
     }
   ],
   "background": {
-    "page": "background.html",
-    "persistent": true
+    "scripts": ["./background/index.js"],
+    "persistent": false
   },
-  "permissions": ["tabs", "<all_urls>", "activeTab"],
+  "permissions": ["storage","tabs", "<all_urls>", "activeTab"],
   "web_accessible_resources": [
-    "index.html"
+    "./map/map.html",
+    "../map/map.html",
+    "map/map.html",
+    "map.html"
   ]
 }

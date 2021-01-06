@@ -53,3 +53,7 @@
   font-size: 9px;
   color: white;
 }
+
+.cellSelected {
+  background-color: #898989;
+}

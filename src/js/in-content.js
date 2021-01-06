@@ -4,7 +4,7 @@
 *
 * Note that in this scenario the port is open from the popup, but other extensions may open it from the background page or not even have either background.js or popup.js.
 * */
-
+console.log("Starting content Script")
 insertMapApp();
 
 // // Extension port to communicate with the popup, also helps detecting when it closes
@@ -42,14 +42,14 @@ function insertMapApp() {
     const extensionOrigin = 'chrome-extension://' + chrome.runtime.id;
     // eslint-disable-next-line no-restricted-globals
     if (!location.ancestorOrigins.contains(extensionOrigin)) {
-        const div = document.createElement('div');
+        const iframe = document.createElement('iframe');
         // Must be declared at web_accessible_resources in manifest.json
         // eslint-disable-next-line no-undef
-        div.src = chrome.runtime.getURL('index.html');
+        iframe.src = chrome.runtime.getURL('../map/map.html');
         // Some styles for a fancy sidebar
-        div.style.cssText = 'position:fixed;top:0;right:0;display:block;' +
+        iframe.style.cssText = 'position:fixed;top:0;right:0;display:block;' +
             'width:600px;height:350px;z-index:1000;';
-        div.id = "popUpRoot"
-        document.body.appendChild(div);
+        iframe.id = "popUpRoot"
+        document.body.appendChild(iframe);
     }
 }
