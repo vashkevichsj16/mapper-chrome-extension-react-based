@@ -10,7 +10,8 @@ const config = {
     entry: {
         popup: path.join(__dirname, "./src/popup/index.js"),
         map: path.join(__dirname, "./src/map/index.js"),
-        background: path.join(__dirname, "./src/js/background.js"),
+        background: path.join(__dirname, "./src/backgroundLogic/background.js"),
+        spyScripts: path.join(__dirname, "./src/map/contentJS/spyScripts.js"),
     },
     output: {
         path: path.resolve(__dirname, "./build"),
@@ -53,7 +54,7 @@ const config = {
                     to: "icons"
                 },
                 {
-                    from: "./src/js/in-content.js",
+                    from: "./src/map/contentJS/mapViewInjector.js",
                     to: "inContent/content.js",
                 }
             ],

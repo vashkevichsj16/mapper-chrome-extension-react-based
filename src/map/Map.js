@@ -32,6 +32,8 @@ const Map = ({mapModelIn}) => {
 
             if (changes['mapModel']) {
                 setMapModel(changes['mapModel'].newValue);
+                console.log("changing mapModel")
+                console.log(mapModel)
             }
         });
     }, []);
@@ -70,6 +72,8 @@ const Map = ({mapModelIn}) => {
                                     borderBottomColor: col.borders.bottom,
                                 }}>
                                     {col.x}, {col.y}
+                                    {col.borders.top ? console.log("Writing object") : ""}
+                                    {col.borders.top ? console.log(col.borders) : ""}
                                 </div>
                             )
                         }

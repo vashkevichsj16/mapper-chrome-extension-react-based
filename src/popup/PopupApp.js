@@ -31,14 +31,14 @@ function PopupApp() {
                 }
                 label="autoMoving"
             />
-            <Button onClick={() => {
+            <Button variant="outlined" color="primary" onClick={() => {
                 chrome.runtime.sendMessage(
                     {
                         action: {
                             type: "CLEAR_THE_MAP",
                             payload: {
-                                x: 100,
-                                y: 100
+                                x: 30,
+                                y: 30
                             }
                         }},
                     function (response) {

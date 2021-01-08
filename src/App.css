@@ -43,7 +43,7 @@
 .mapCol{
   height: 28px;
   width: 28px;
-  border: 1px solid black;
+  border: 1px solid gray;
   display: inline-grid;
   font-size: 10px;
 }

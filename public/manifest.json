@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.fantasyland.ru/main*"],
-      "js": ["./inContent/content.js"]
+      "js": ["./inContent/content.js", "./spyScripts/index.js"]
     }
   ],
   "background": {

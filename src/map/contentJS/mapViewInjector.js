@@ -7,7 +7,6 @@ insertMapApp();
 function insertMapApp() {
     // Avoid recursive frame insertion...
     const extensionOrigin = 'chrome-extension://' + chrome.runtime.id;
-    // eslint-disable-next-line no-restricted-globals
     if (!location.ancestorOrigins.contains(extensionOrigin)) {
         const div = document.createElement('div');
         const iframe = document.createElement('iframe');
