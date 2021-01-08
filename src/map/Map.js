@@ -3,10 +3,13 @@ import * as React from 'react';
 import {Container} from "@material-ui/core";
 import {useState} from "react";
 
-const Map = ({mapModel}) => {
-
+const Map = ({mapModelIn}) => {
     console.log("Setting states in mapDiv")
-    const [playerPosition, setPlayerPosition] = useState(mapModel.playerPosition);
+    const [playerPosition, setPlayerPosition] = useState({
+        x: 1,
+        y: 1
+    });
+    const [mapModel, setMapModel] = useState(mapModelIn);
 
     const [offset, setOffset] = useState({
         xOffset: calculateScrollX(mapModel, playerPosition),
@@ -26,54 +29,12 @@ const Map = ({mapModel}) => {
                     yOffset: calculateScrollY(mapModel, changes['playerPosition'].newValue)
                 });
             }
+
+            if (changes['mapModel']) {
+                setMapModel(changes['mapModel'].newValue);
+            }
         });
     }, []);
-
-    function getWidth(mapModel) {
-        return (mapModel.labSize.x * (mapModel.cellSize + 2));
-    }
-
-    function getHeight(mapModel) {
-        return (mapModel.labSize.y * (mapModel.cellSize + 2));
-    }
-
-    function calculateScrollX(mapModel, playerPosition) {
-        let elementWidth = getWidth(mapModel);
-        let windowWidth = window.innerWidth;
-        console.log("================");
-        console.log("Inned Width " + windowWidth);
-        console.log("Position X " + playerPosition.x);
-        console.log("elementWidth X " + elementWidth);
-        let aprOffsetX = playerPosition.x * (mapModel.cellSize + 2) - windowWidth / 2;
-        console.log("aprOffsetX " + aprOffsetX);
-        if ((aprOffsetX + mapModel.cellSize + 2) >= elementWidth - windowWidth) {
-            return elementWidth - windowWidth;
-        }
-        if (aprOffsetX < 0) {
-            console.log("return 0");
-            return 0;
-        }
-        console.log("return " + aprOffsetX);
-        return aprOffsetX;
-    }
-
-    function calculateScrollY(mapModel, playerPosition) {
-        let elementHeight = getHeight(mapModel);
-        let windowHeight = window.innerHeight;
-        let aprOffsetY = playerPosition.y * (mapModel.cellSize + 2) - windowHeight / 2;
-        console.log("================");
-        console.log("Inned Height  " + windowHeight);
-        console.log("Position Y " + playerPosition.y);
-        console.log("aprOffsetY " + aprOffsetY);
-        if ((aprOffsetY + mapModel.cellSize + 2) >= elementHeight - windowHeight) {
-            return elementHeight - windowHeight;
-        }
-        if (aprOffsetY < 0) {
-            console.log("return " + elementHeight - windowHeight / 2 - mapModel.cellSize - 2);
-            return 0;
-        }
-        return aprOffsetY;
-    }
 
     return (
         <div className="Map" style={{
@@ -120,3 +81,37 @@ const Map = ({mapModel}) => {
 }
 
 export default Map;
+
+function getWidth(mapModel) {
+    return (mapModel.labSize.x * (mapModel.cellSize + 2));
+}
+
+function getHeight(mapModel) {
+    return (mapModel.labSize.y * (mapModel.cellSize + 2));
+}
+
+function calculateScrollX(mapModel, playerPosition) {
+    let elementWidth = getWidth(mapModel);
+    let windowWidth = window.innerWidth;
+    let aprOffsetX = playerPosition.x * (mapModel.cellSize + 2) - windowWidth / 2;
+    if ((aprOffsetX + mapModel.cellSize + 2) >= elementWidth - windowWidth) {
+        return elementWidth - windowWidth;
+    }
+    if (aprOffsetX < 0) {
+        return 0;
+    }
+    return aprOffsetX;
+}
+
+function calculateScrollY(mapModel, playerPosition) {
+    let elementHeight = getHeight(mapModel);
+    let windowHeight = window.innerHeight;
+    let aprOffsetY = playerPosition.y * (mapModel.cellSize + 2) - windowHeight / 2;
+    if ((aprOffsetY + mapModel.cellSize + 2) >= elementHeight - windowHeight) {
+        return elementHeight - windowHeight;
+    }
+    if (aprOffsetY < 0) {
+        return 0;
+    }
+    return aprOffsetY;
+}

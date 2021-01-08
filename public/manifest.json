@@ -20,7 +20,7 @@
   ],
   "background": {
     "scripts": ["./background/index.js"],
-    "persistent": false
+    "persistent": true
   },
   "permissions": ["storage","tabs", "<all_urls>", "activeTab"],
   "web_accessible_resources": [

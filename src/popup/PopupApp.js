@@ -1,5 +1,5 @@
 import '../App.css';
-import {FormControlLabel, Switch} from "@material-ui/core";
+import {Button, FormControlLabel, Switch} from "@material-ui/core";
 
 function PopupApp() {
 
@@ -31,6 +31,20 @@ function PopupApp() {
                 }
                 label="autoMoving"
             />
+            <Button onClick={() => {
+                chrome.runtime.sendMessage(
+                    {
+                        action: {
+                            type: "CLEAR_THE_MAP",
+                            payload: {
+                                x: 100,
+                                y: 100
+                            }
+                        }},
+                    function (response) {
+                        console.log("Send to request to clear the map")
+                    });
+            }}>Click me</Button>
         </div>
     </div>
   );
