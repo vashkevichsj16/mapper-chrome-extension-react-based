@@ -41,9 +41,9 @@
   height: 30px
 }
 .mapCol{
-  height: 28px;
-  width: 28px;
-  border: 1px solid gray;
+  height: 26px;
+  width: 26px;
+  border: 2px solid gray;
   display: inline-grid;
   font-size: 10px;
 }
@@ -52,6 +52,7 @@
   font-family: Roboto, serif;
   font-size: 9px;
   color: white;
+  font-weight: 900;
 }
 
 .cellSelected {

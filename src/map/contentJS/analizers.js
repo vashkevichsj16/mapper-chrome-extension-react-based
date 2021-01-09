@@ -11,7 +11,6 @@ exports.isCombat = function isCombat() {
 }
 
 exports.getMoves = function getMoves() {
-    const position = parsePosition();
     const movementDocument = document.getElementById('loc')
         .contentWindow.document.getElementById('noCombat')
         .contentWindow.document;
@@ -29,10 +28,19 @@ exports.getMoves = function getMoves() {
         right: isPossibleMove(movementDocument, "#d5"),
     }
     return {
-        playerPosition: position,
+        playerPosition: parsePosition(),
         doors: doors,
-        moves: moves
+        moves: moves,
+        drops: objectsAvailable()
     }
+}
+
+exports.dropsAvailable = function dropsAvailable() {
+    return document
+        .getElementById('loc')
+        .contentWindow.document.getElementById('noCombat')
+        .contentWindow.document.querySelectorAll("#picks > table > tbody > tr")
+        .length > 0
 }
 
 function isPossibleMove(movementElement, positionElementId) {
@@ -91,4 +99,19 @@ function parsePosition() {
         x: parseInt(splitArray[1].replace(/^\D+/g, '')),
         y: parseInt(splitArray[2].replace(/^\D+/g, '')),
     }
+}
+
+function objectsAvailable() {
+    if (document.getElementById('loc')
+        .contentWindow.document.getElementById('noCombat')
+        .contentWindow.document.querySelector("#picks")) {
+        return Array.from(document.getElementById('loc')
+            .contentWindow.document.getElementById('noCombat')
+            .contentWindow.document.querySelectorAll("#picks > table > tbody > tr"))
+            .map(el => ({
+                left: el.cells[0].querySelector("img").src,
+                right: el.cells[1].innerText,
+            }))
+    }
+    return [];
 }

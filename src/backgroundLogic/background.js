@@ -1,5 +1,5 @@
 
-const CELL_SIZE = 28;
+const CELL_SIZE = 26;
 
 
 chrome.runtime.onMessage.addListener(
@@ -29,8 +29,9 @@ function processPlayerMove(movePayload) {
                 bottom: mapMove(movePayload.doors.bottom),
                 right: mapMove(movePayload.doors.right)
             }
+            console.log(movePayload.drops);
             let cell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1];
-            cell = updateCell(cell, borders, movePayload.moves);
+            cell = updateCell(cell, borders, movePayload.moves, movePayload.drops);
             data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1] = cell;
             console.log(data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1]);
 
@@ -66,7 +67,7 @@ function processPlayerMove(movePayload) {
     });
 }
 
-function updateCell(cell, borders, moves) {
+function updateCell(cell, borders, moves, drops = cell.drops) {
     cell.borders = {
         top: "top" in borders ? borders.top  : cell.borders.top,
         left: "left" in borders ? borders.left  : cell.borders.left,
@@ -74,6 +75,7 @@ function updateCell(cell, borders, moves) {
         right: "right" in borders ? borders.right  : cell.borders.right,
     };
     cell.moves = moves;
+    cell.drops = drops;
     return cell;
 }
 

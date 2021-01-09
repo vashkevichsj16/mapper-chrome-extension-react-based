@@ -1,7 +1,30 @@
 import '../App.css';
 import {Button, FormControlLabel, Switch} from "@material-ui/core";
+import {useState} from "react";
+import * as React from "react";
 
-function PopupApp() {
+function PopupApp({data}) {
+    const [pickLoot, setPickLoot] = useState("pickLoot" in data ? data.pickLoot : false);
+    const handleChange = (event) => {
+        chrome.storage.local.set(
+            {
+                pickLoot: event.target.checked
+            }, function () {
+                setPickLoot(event.target.checked);
+            }
+        );
+        console.log("handleChange", event.target.checked);
+    };
+
+    React.useEffect(() => {
+        chrome.storage.onChanged.addListener(function(changes, namespace) {
+
+            if ("pickLoot" in changes) {
+                setPickLoot(changes['pickLoot'].newValue);
+                console.log("changing pickLoot to " + changes['pickLoot'].newValue);
+            }
+        });
+    }, []);
 
   return (
     <div className="App" style={{width: "300px", height: "300px"}}>
@@ -31,6 +54,18 @@ function PopupApp() {
                 }
                 label="autoMoving"
             />
+            <FormControlLabel
+                control={
+                    <Switch
+                        checked={pickLoot}
+                        onChange={handleChange}
+                        color="primary"
+                        name="autoMoving"
+                        inputProps={{ 'aria-label': 'autoMoving' }}
+                    />
+                }
+                label="Pick Objects"
+            />
             <Button variant="outlined" color="primary" onClick={() => {
                 chrome.runtime.sendMessage(
                     {
@@ -44,7 +79,7 @@ function PopupApp() {
                     function (response) {
                         console.log("Send to request to clear the map")
                     });
-            }}>Click me</Button>
+            }}>Restart map</Button>
         </div>
     </div>
   );
