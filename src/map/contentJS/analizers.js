@@ -29,7 +29,7 @@ exports.getMoves = function getMoves() {
         right: isPossibleMove(movementDocument, "#d5"),
     }
     return {
-        position: position,
+        playerPosition: position,
         doors: doors,
         moves: moves
     }
@@ -56,17 +56,25 @@ function mapDoor(moveImage) {
         case "go_default" :
             return "blocked";
         case "go2" :
+        case "go2_s" :
             return "red";
         case "go3" :
+        case "go3_s" :
             return "green";
         case "go4" :
+        case "go4_s" :
             return "blue";
         case "go5" :
+        case "go5_s" :
             return "white";
+        case "go_n_s" :
         case "go_n" :
         case "go_e" :
+        case "go_e_s" :
         case "go_s" :
+        case "go_s_s" :
         case "go_w" :
+        case "go_w_s" :
             return "normal";
         default :
             return "blocked";

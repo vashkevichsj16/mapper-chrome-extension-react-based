@@ -21,7 +21,6 @@ chrome.runtime.onMessage.addListener(
     }
  */
 function processPlayerMove(movePayload) {
-    updatePlayerPosition(movePayload.position);
     chrome.storage.local.get("mapModel", function (data) {
         if (data.mapModel) {
             const borders = {
@@ -30,34 +29,35 @@ function processPlayerMove(movePayload) {
                 bottom: mapMove(movePayload.doors.bottom),
                 right: mapMove(movePayload.doors.right)
             }
-            let cell = data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x - 1];
+            let cell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1];
             cell = updateCell(cell, borders, movePayload.moves);
-            data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x - 1] = cell;
-            console.log(data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x - 1]);
+            data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1] = cell;
+            console.log(data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1]);
 
-            if (movePayload.position.y < data.mapModel.labSize.y - 1) {
-                let bottomCell = data.mapModel.cells[movePayload.position.y][movePayload.position.x - 1];
+            if (movePayload.playerPosition.y < data.mapModel.labSize.y) {
+                let bottomCell = data.mapModel.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1];
                 updateCell(bottomCell, {top: borders.bottom}, bottomCell.moves);
-                data.mapModel.cells[movePayload.position.y][movePayload.position.x - 1] = bottomCell;
+                data.mapModel.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1] = bottomCell;
             }
-            if (movePayload.position.y < data.mapModel.labSize.x - 1) {
-                let rightCell = data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x];
+            if (movePayload.playerPosition.x < data.mapModel.labSize.x) {
+                let rightCell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x];
                 updateCell(rightCell, {left: borders.right}, rightCell.moves);
-                data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x] = rightCell;
+                data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x] = rightCell;
             }
-            if (movePayload.position.y > 1) {
-                let topCell = data.mapModel.cells[movePayload.position.y - 2][movePayload.position.x - 1];
+            if (movePayload.playerPosition.y > 1) {
+                let topCell = data.mapModel.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1];
                 updateCell(topCell, {bottom: borders.top}, topCell.moves);
-                data.mapModel.cells[movePayload.position.y - 2][movePayload.position.x - 1] = topCell;
+                data.mapModel.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1] = topCell;
             }
-            if (movePayload.position.x > 1) {
-                let leftCell = data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x - 2];
+            if (movePayload.playerPosition.x > 1) {
+                let leftCell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2];
                 updateCell(leftCell, {right: borders.left}, leftCell.moves);
-                data.mapModel.cells[movePayload.position.y - 1][movePayload.position.x - 2] = leftCell;
+                data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2] = leftCell;
             }
             chrome.storage.local.set(
                 {
-                    mapModel: data.mapModel
+                    mapModel: data.mapModel,
+                    playerPosition: movePayload.playerPosition
                 }, function () {
                     console.log('Updating Map');
                 }
@@ -94,16 +94,6 @@ function mapMove(move) {
             return "gray";
     }
 }
-
-function updatePlayerPosition(playerPosition) {
-    chrome.storage.local.set(
-        {
-            playerPosition: playerPosition
-        }, function () {
-        }
-    );
-}
-
 
 function createCells(x, y) {
     let cells = []
