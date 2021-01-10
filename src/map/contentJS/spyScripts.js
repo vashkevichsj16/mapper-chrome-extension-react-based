@@ -1,20 +1,33 @@
-import {dropsAvailable, getMoves} from "./analizers";
+import {dropsAvailable, getFightUnits, getMoves, isCombat} from "./analizers";
 import {pickObjects, refreshLoc} from "./Actions";
 
 setTimeout(function () {
-    setInterval(function () {
+    if (! isCombat()) {
+
+        setInterval(function () {
+            chrome.runtime.sendMessage(
+                {
+                    action: {
+                        type: "UPDATE_PLAYER_POSITION",
+                        payload: getMoves()
+                    }
+                },
+                function (response) {
+                    console.log("Send to request to clear the map")
+                });
+        }, 500);
+        startPicker();
+    } else {
         chrome.runtime.sendMessage(
             {
                 action: {
-                    type: "UPDATE_PLAYER_POSITION",
-                    payload: getMoves()
+                    type: "UPDATE_PLAYER_FIGHT_UNITS",
+                    payload: getFightUnits()
                 }
             },
             function (response) {
-                console.log("Send to request to clear the map")
             });
-    }, 500);
-    startPicker();
+    }
 }, 2000);
 
 function startPicker() {

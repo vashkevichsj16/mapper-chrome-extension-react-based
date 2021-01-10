@@ -4,13 +4,42 @@ const CELL_SIZE = 26;
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        if (request.action.type === "CLEAR_THE_MAP") {
-            startTheMap(request.action.payload.x, request.action.payload.y);
+        switch (request.action.type) {
+            case "CLEAR_THE_MAP" :
+                startTheMap(request.action.payload.x, request.action.payload.y);
+                break;
+            case "UPDATE_PLAYER_POSITION" :
+                processPlayerMove(request.action.payload);
+                break;
+            case "UPDATE_PLAYER_FIGHT_UNITS" :
+                updateAvailableUnits(request.action.payload);
+                break;
+            case "UPDATE_PLAYER_SELECTED_UNITS" :
+                updateSelectedUnits(request.action.payload);
+                break;
         }
-        if (request.action.type === "UPDATE_PLAYER_POSITION") {
-            processPlayerMove(request.action.payload);
-        }
+
     })
+
+function updateSelectedUnits(units) {
+    chrome.storage.local.set(
+        {
+            selectedUnits: units,
+        }, function () {
+            console.log('Updated selected Units');
+        }
+    );
+}
+
+function updateAvailableUnits(units) {
+    chrome.storage.local.set(
+        {
+            availableUnits: units,
+        }, function () {
+            console.log('Updated Available Units');
+        }
+    );
+}
 
 /**
  * Object example

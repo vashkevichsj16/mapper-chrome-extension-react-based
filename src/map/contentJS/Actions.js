@@ -18,3 +18,9 @@ exports.refreshLoc = function refreshLoc() {
         .contentWindow.document.getElementById('noCombat')
         .contentWindow.document.querySelector("#d4").click();
 }
+
+function setArmy(army_id) {
+    document.getElementById('loc')
+        .contentWindow.document.getElementById('your_army')
+        .contentWindow.document.querySelector("#" + army_id + " > table > tbody > tr:nth-child(2) > td:nth-child(2) > div").click()
+}

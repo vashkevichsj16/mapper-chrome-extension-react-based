@@ -4,7 +4,6 @@ import {useState} from "react";
 
 const Cell = ({playerPosition, cellInfo}) => {
 
-
     const [drops, setDrops] = useState(
         (typeof cellInfo.drops !== 'undefined' &&  cellInfo.drops !== null) ?
             Object.values(cellInfo.drops).map((drop) => drop.right)
@@ -12,10 +11,6 @@ const Cell = ({playerPosition, cellInfo}) => {
             : ""
     )
 
-    if (typeof cellInfo.drops !== 'undefined' && cellInfo.drops !== null && cellInfo.drops.length > 0) {
-        console.log("Printing drops")
-        console.log(cellInfo.drops)
-    }
     return (
         <div
             className={

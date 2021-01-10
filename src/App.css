@@ -58,3 +58,8 @@
 .cellSelected {
   background-color: #898989;
 }
+
+.image_picker .responsive .thumbnail {
+  height: 100px!important;
+  width: 100px!important;
+}

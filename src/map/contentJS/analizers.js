@@ -43,6 +43,36 @@ exports.dropsAvailable = function dropsAvailable() {
         .length > 0
 }
 
+exports.isCombat = function isCombat() {
+    return document.getElementById('loc')
+        .contentWindow.document
+        .getElementById('combatPanelDiv');
+}
+
+exports.getFightUnits = function getFightUnits() {
+    document.querySelector("#divDrak")
+    document.querySelectorAll(".ArmyShow")
+    return {
+        drakes: getOneTypeUnits("#divDrak"),
+        lords: getOneTypeUnits("#divRyc"),
+        dames: getOneTypeUnits("#divDam"),
+    }
+}
+
+function getOneTypeUnits(type) {
+    return Array.from(document.getElementById('loc')
+        .contentWindow.document.getElementById('your_army')
+        .contentWindow.document.querySelector(type)
+        .querySelectorAll(".ArmyShow"))
+        .map(
+            el => ({
+                id: el.id,
+                src: "https://www.fantasyland.ru/" + el.querySelector("table > tbody > tr:nth-child(2) > td:nth-child(2) > div > div:nth-child(3)")
+                    .style.backgroundImage.slice(4, -1).replace(/"/g, "")
+            })
+        )
+}
+
 function isPossibleMove(movementElement, positionElementId) {
     return !movementElement
         .querySelector(positionElementId + " > img")
