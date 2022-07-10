@@ -2,8 +2,7 @@ import * as React from "react";
 import {useState} from "react";
 import {Modal, Row, Button} from "react-bootstrap";
 import {Container} from "@material-ui/core";
-import ImagePicker from 'react-image-picker'
-import "react-image-picker/dist/index.css"
+import ImagePicker from 'simple-react-image-picker'
 import 'bootstrap/dist/css/bootstrap.css';
 const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
 
@@ -33,6 +32,16 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
         setShow(true)
     }
 
+    //TODO
+    // Доделать эту штуку, чтобы сетался isSelected в картинках, для того чтобы пики работыли
+    // Нужно прокидывать флаг уже в самих картинках
+    const onPick = (images, list) => {
+        selectedUnits[list] = images.map(
+            el => (el.value)
+        )
+        setSelectedUnits(selectedUnits)
+    }
+
     const onPickDrake = (images) => {
         onPick(images, "drakes")
     }
@@ -41,14 +50,7 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
     }
     const onPickDame = (images) => {
         onPick(images, "dames")
-    }
-
-
-    const onPick = (images, list) => {
-        selectedUnits[list] = images.map(
-            el => (el.value)
-        )
-        setSelectedUnits(selectedUnits)
+        console.log(selectedUnits);
     }
 
     return (
@@ -64,25 +66,32 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
                     <Container>
                         <Row>
                             <ImagePicker
-                                onPick={onPickDrake}
                                 images={availableUnits.drakes.map((image) => ({
                                     src: image.src,
                                     value: image.id
                                 }))}
+                                pickHandler={onPickDrake}
                                 multiple
                             />
                         </Row>
                         <Row>
                             <ImagePicker
-                                onPick={onPickLord}
-                                images={availableUnits.lords.map((image) => ({src: image.src, value: image.id}))}
+                                images={availableUnits.lords.map((image) => ({
+                                    src: image.src,
+                                    value: image.id
+                                }))}
+                                pickHandler={onPickLord}
                                 multiple
                             />
                         </Row>
                         <Row>
                             <ImagePicker
-                                onPick={onPickDame}
-                                images={availableUnits.dames.map((image) => ({src: image.src, value: image.id}))}
+                                images={availableUnits.dames.map((image) => ({
+                                    src: image.src,
+                                    value: image.id,
+                                    isSelected:true
+                                }))}
+                                pickHandler={onPickDame}
                                 multiple
                             />
                         </Row>

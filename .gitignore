@@ -30,3 +30,6 @@ yarn-error.log*
 /.idea/.gitignore
 /.prettierrc
 /.idea/kartograf-webpack.iml
+/package-lock.json
+
+.gitignore

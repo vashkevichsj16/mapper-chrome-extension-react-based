@@ -14,19 +14,17 @@
     "crx-webpack-plugin": "^0.1.5",
     "css-loader": "^5.0.1",
     "file-loader": "^6.2.0",
-    "html-webpack-plugin": "^4.5.1",
+    "html-webpack-plugin": "^5.4.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
-    "react-image-picker": "^1.1.1",
     "react-scripts": "4.0.1",
-    "style-loader": "^2.0.0",
+    "simple-react-image-picker": "^1.1.17",
     "web-vitals": "^0.2.4",
-    "webpack": "^5.11.1",
     "webpack-extension-manifest-plugin": "^0.6.0"
   },
   "scripts": {
-    "dev": "NODE_ENV=development webpack --mode development --config webpack.js --watch"
+    "dev": "SET NODE_ENV=development & webpack --mode development --config webpack.config.js --watch"
   },
   "browserslist": {
     "production": [
@@ -41,6 +39,8 @@
     ]
   },
   "devDependencies": {
-    "webpack-cli": "^4.3.1"
+    "@webpack-cli/generators": "^2.4.2",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2"
   }
 }

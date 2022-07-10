@@ -43,26 +43,38 @@ exports.dropsAvailable = function dropsAvailable() {
         .length > 0
 }
 
-exports.isCombat = function isCombat() {
-    return document.getElementById('loc')
-        .contentWindow.document
-        .getElementById('combatPanelDiv');
-}
-
 exports.getFightUnits = function getFightUnits() {
-    document.querySelector("#divDrak")
-    document.querySelectorAll(".ArmyShow")
-    return {
-        drakes: getOneTypeUnits("#divDrak"),
-        lords: getOneTypeUnits("#divRyc"),
-        dames: getOneTypeUnits("#divDam"),
+    if (exports.isCombat()) {
+        return {
+            drakes: getOneTypeUnitsInCombat("#divDrak"),
+            lords: getOneTypeUnitsInCombat("#divRyc"),
+            dames: getOneTypeUnitsInCombat("#divDam"),
+        }
+    } else {
+        return {
+            drakes: getOneTypeUnitsOutOfCombat("#divDrak"),
+            lords: getOneTypeUnitsOutOfCombat("#divRyc"),
+            dames: getOneTypeUnitsOutOfCombat("#divDam"),
+        }
     }
 }
 
-function getOneTypeUnits(type) {
-    return Array.from(document.getElementById('loc')
+function getOneTypeUnitsOutOfCombat(type) {
+    const element = document.getElementById('loc')
+        .contentWindow.document.getElementById('showInfo')
+        .contentWindow.document;
+    return getOneTypeUnits(type, element);
+}
+
+function getOneTypeUnitsInCombat(type) {
+    const element = document.getElementById('loc')
         .contentWindow.document.getElementById('your_army')
-        .contentWindow.document.querySelector(type)
+        .contentWindow.document;
+    return getOneTypeUnits(type, element);
+}
+
+function getOneTypeUnits(type, element) {
+    return Array.from(element.querySelector(type)
         .querySelectorAll(".ArmyShow"))
         .map(
             el => ({
