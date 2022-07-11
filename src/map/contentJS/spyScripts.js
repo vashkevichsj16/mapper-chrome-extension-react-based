@@ -1,9 +1,19 @@
-import {dropsAvailable, getFightUnits, getMoves, isCombat} from "./analizers";
+import {dropsAvailable, getFightUnits, getMoves, isCombat, isLab} from "./analizers";
 import {pickObjects, refreshLoc} from "./Actions";
 
 setTimeout(function () {
-    if (! isCombat()) {
 
+    if (isCombat()) {
+        chrome.runtime.sendMessage(
+            {
+                action: {
+                    type: "UPDATE_PLAYER_FIGHT_UNITS",
+                    payload: getFightUnits()
+                }
+            },
+            function (response) {
+            });
+    } else if (isLab()) {
         setInterval(function () {
             chrome.runtime.sendMessage(
                 {
@@ -18,15 +28,7 @@ setTimeout(function () {
         }, 500);
         startPicker();
     } else {
-        chrome.runtime.sendMessage(
-            {
-                action: {
-                    type: "UPDATE_PLAYER_FIGHT_UNITS",
-                    payload: getFightUnits()
-                }
-            },
-            function (response) {
-            });
+        // Actions out of the combat
     }
 }, 2000);
 
