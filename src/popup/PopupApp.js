@@ -7,12 +7,14 @@ import {Row} from "react-bootstrap";
 
 function PopupApp({data}) {
     const [pickLoot, setPickLoot] = useState("pickLoot" in data ? data.pickLoot : false);
+    const [autoMove, setAutoMove] = useState("autoMove" in data ? data.autoMove : false);
+    const [openMap, setOpenMap] = useState("openMap" in data ? data.openMap : false);
     const [availableUnits, setAvailableUnits] = useState(data.availableUnits)
     const [state, setState] = useState(1);
     const handleChange = () => {
         setState(state + 1);
     };
-    const handleButtonsChange = (event) => {
+    const handlePickChange = (event) => {
         chrome.storage.local.set(
             {
                 pickLoot: event.target.checked
@@ -20,7 +22,24 @@ function PopupApp({data}) {
                 setPickLoot(event.target.checked);
             }
         );
-        console.log("handleChange", event.target.checked);
+    };
+    const handleAutoMoveChange = (event) => {
+        chrome.storage.local.set(
+            {
+                autoMove: event.target.checked
+            }, function () {
+                setAutoMove(event.target.checked);
+            }
+        );
+    };
+    const handleOpenMap = (event) => {
+        chrome.storage.local.set(
+            {
+                openMap: event.target.checked
+            }, function () {
+                setOpenMap(event.target.checked);
+            }
+        );
     };
 
     const reloadUnitsList = () => {
@@ -32,10 +51,14 @@ function PopupApp({data}) {
 
     React.useEffect(() => {
         chrome.storage.onChanged.addListener(function (changes, namespace) {
-
             if ("pickLoot" in changes) {
                 setPickLoot(changes['pickLoot'].newValue);
-                console.log("changing pickLoot to " + changes['pickLoot'].newValue);
+            }
+            if ("autoMove" in changes) {
+                setAutoMove(changes['autoMove'].newValue);
+            }
+            if ("openMap" in changes) {
+                setOpenMap(changes['openMap'].newValue);
             }
         });
     }, []);
@@ -48,9 +71,9 @@ function PopupApp({data}) {
                     <FormControlLabel
                         control={
                             <Switch
-                                // checked={state.checkedB}
-                                // onChange={handleChange}
-                                // color="primary"
+                                checked={openMap}
+                                onChange={handleOpenMap}
+                                color="primary"
                                 name="openMap"
                                 inputProps={{'aria-label': 'Open map window'}}
                             />
@@ -60,24 +83,23 @@ function PopupApp({data}) {
                     <FormControlLabel
                         control={
                             <Switch
-                                // checked={state.checkedB}
-                                // onChange={handleChange}
-                                // color="primary"
+                                checked={autoMove}
+                                onChange={handleAutoMoveChange}
+                                color="primary"
                                 name="autoMoving"
                                 inputProps={{'aria-label': 'autoMoving'}}
                             />
                         }
                         label="autoMoving"
                     />
-
                     <FormControlLabel
                         control={
                             <Switch
                                 checked={pickLoot}
-                                onChange={handleButtonsChange}
+                                onChange={handlePickChange}
                                 color="primary"
-                                name="autoMoving"
-                                inputProps={{'aria-label': 'autoMoving'}}
+                                name="autoPick"
+                                inputProps={{'aria-label': 'autoPick'}}
                             />
                         }
                         label="Pick Objects"
@@ -97,7 +119,6 @@ function PopupApp({data}) {
                                 }
                             },
                             function (response) {
-                                console.log("Send to request to clear the map")
                             });
                     }}>Restart map</Button>
                 </Row>
