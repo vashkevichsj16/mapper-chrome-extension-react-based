@@ -4,42 +4,58 @@ import {Modal, Row, Button} from "react-bootstrap";
 import {Container} from "@material-ui/core";
 import ImagePicker from 'simple-react-image-picker'
 import 'bootstrap/dist/css/bootstrap.css';
-const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
+
+const UnitsSelectModal = ({availableUnitsList, reloadCall}) => {
 
     const [show, setShow] = useState(false)
-    const [selectedUnits, setSelectedUnits] = useState(
-        typeof selectedUnitsList !== 'undefined' ? selectedUnitsList :
-            {
-                drakes: [],
-                lords: [],
-                dames: []
-            });
-    const [availableUnits, setAvailableUnits] = useState(beautifyUnits(availableUnitsList, selectedUnits))
-
+    const [availableUnits, setAvailableUnits] = useState(availableUnitsList)
+    const [state, setState] = useState(1);
+    const handleChange = () => {
+        setState(state + 1);
+    };
     const handleClose = () => {
         chrome.runtime.sendMessage(
             {
                 action: {
-                    type: "UPDATE_PLAYER_SELECTED_UNITS",
-                    payload: selectedUnits
+                    type: "UPDATE_PLAYER_FIGHT_UNITS",
+                    payload: availableUnits
                 }
             },
             function (response) {
+                reloadCall();
             });
         setShow(false)
     }
+
     const handleShow = () => {
         setShow(true)
     }
 
-    //TODO
-    // Доделать эту штуку, чтобы сетался isSelected в картинках, для того чтобы пики работыли
-    // Нужно прокидывать флаг уже в самих картинках
     const onPick = (images, list) => {
-        selectedUnits[list] = images.map(
-            el => (el.value)
+        const ids = mapValues(images);
+        availableUnits[list] = availableUnits[list].map(
+            el => {
+                if (containsIdInList(el.id, ids)) {
+                    el.selected = true;
+                    return el;
+                } else {
+                    el.selected = false;
+                    return el;
+                }
+            }
         )
-        setSelectedUnits(selectedUnits)
+        setAvailableUnits(availableUnits)
+        handleChange();
+    }
+
+    const mapValues = (list) => {
+        return list.map(
+            el => el.value
+        );
+    }
+
+    const containsIdInList = (id, list) => {
+        return list.includes(id);
     }
 
     const onPickDrake = (images) => {
@@ -50,7 +66,6 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
     }
     const onPickDame = (images) => {
         onPick(images, "dames")
-        console.log(selectedUnits);
     }
 
     return (
@@ -66,9 +81,11 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
                     <Container>
                         <Row>
                             <ImagePicker
-                                images={availableUnits.drakes.map((image) => ({
+                                images={
+                                availableUnits.drakes.map((image) => ({
                                     src: image.src,
-                                    value: image.id
+                                    value: image.id,
+                                    isSelected: image.selected
                                 }))}
                                 pickHandler={onPickDrake}
                                 multiple
@@ -78,7 +95,8 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
                             <ImagePicker
                                 images={availableUnits.lords.map((image) => ({
                                     src: image.src,
-                                    value: image.id
+                                    value: image.id,
+                                    isSelected: image.selected
                                 }))}
                                 pickHandler={onPickLord}
                                 multiple
@@ -89,7 +107,7 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
                                 images={availableUnits.dames.map((image) => ({
                                     src: image.src,
                                     value: image.id,
-                                    isSelected:true
+                                    isSelected: image.selected
                                 }))}
                                 pickHandler={onPickDame}
                                 multiple
@@ -111,25 +129,3 @@ const UnitsSelectModal = ({availableUnitsList, selectedUnitsList}) => {
 };
 
 export default UnitsSelectModal;
-
-function beautifyUnits(availableUnitsList, selectedUnitsList) {
-    if (typeof availableUnitsList !== 'undefined' && typeof selectedUnitsList !== 'undefined') {
-        {
-            return {
-                drakes: beautifyList(availableUnitsList.drakes, selectedUnitsList.drakes),
-                lords: beautifyList(availableUnitsList.lords, selectedUnitsList.lords),
-                dames: beautifyList(availableUnitsList.dames, selectedUnitsList.dames)
-            }
-        }
-    }
-    return availableUnitsList;
-}
-
-function beautifyList(unitsList, selectedList) {
-    return unitsList.map(
-        el => ({
-            ...el,
-            selected: selectedList.includes(el.id)
-        })
-    )
-}

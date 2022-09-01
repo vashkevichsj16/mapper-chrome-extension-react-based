@@ -7,7 +7,12 @@ import {Row} from "react-bootstrap";
 
 function PopupApp({data}) {
     const [pickLoot, setPickLoot] = useState("pickLoot" in data ? data.pickLoot : false);
-    const handleChange = (event) => {
+    const [availableUnits, setAvailableUnits] = useState(data.availableUnits)
+    const [state, setState] = useState(1);
+    const handleChange = () => {
+        setState(state + 1);
+    };
+    const handleButtonsChange = (event) => {
         chrome.storage.local.set(
             {
                 pickLoot: event.target.checked
@@ -16,6 +21,13 @@ function PopupApp({data}) {
             }
         );
         console.log("handleChange", event.target.checked);
+    };
+
+    const reloadUnitsList = () => {
+        chrome.storage.local.get("availableUnits", function (data) {
+            setAvailableUnits(data);
+            handleChange();
+        });
     };
 
     React.useEffect(() => {
@@ -62,7 +74,7 @@ function PopupApp({data}) {
                         control={
                             <Switch
                                 checked={pickLoot}
-                                onChange={handleChange}
+                                onChange={handleButtonsChange}
                                 color="primary"
                                 name="autoMoving"
                                 inputProps={{'aria-label': 'autoMoving'}}
@@ -90,8 +102,7 @@ function PopupApp({data}) {
                     }}>Restart map</Button>
                 </Row>
                 <Row>
-                    <UnitsSelectModal availableUnitsList={data.availableUnits}
-                                      selectedUnitsList={data.selectedUnits}/>
+                    <UnitsSelectModal reloadCall ={reloadUnitsList} availableUnitsList={availableUnits}/>
                 </Row>
             </Container>
         </div>

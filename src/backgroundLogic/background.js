@@ -14,9 +14,6 @@ chrome.runtime.onMessage.addListener(
             case "UPDATE_PLAYER_FIGHT_UNITS" :
                 updateAvailableUnits(request.action.payload);
                 break;
-            case "UPDATE_PLAYER_SELECTED_UNITS" :
-                updateSelectedUnits(request.action.payload);
-                break;
         }
 
     })
