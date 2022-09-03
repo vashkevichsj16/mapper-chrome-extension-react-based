@@ -1,3 +1,4 @@
+import {getFightUnits} from "../map/contentJS/analizers";
 
 const CELL_SIZE = 26;
 
@@ -14,10 +15,27 @@ chrome.runtime.onMessage.addListener(
             case "UPDATE_PLAYER_FIGHT_UNITS" :
                 updateAvailableUnits(request.action.payload);
                 break;
+            case "GET_AUTO_PICK" :
+                getAutoPick();
+                break;
         }
-
+        return true;
     })
-
+chrome.storage.onChanged.addListener(function (changes, namespace) {
+    if ("pickLoot" in changes) {
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id,
+                {
+                    action: {
+                        type: "RETURN_AUTO_PICK",
+                        payload: changes['pickLoot'].newValue
+                    }
+                },
+                function(response) {});
+        });
+    }
+    return true;
+});
 function updateSelectedUnits(units) {
     chrome.storage.local.set(
         {
@@ -37,6 +55,21 @@ function updateAvailableUnits(units) {
         }
     );
 }
+function getAutoPick() {
+    chrome.storage.local.get("pickLoot", function (data) {
+        if ("pickLoot" in data && data.pickLoot) {
+            chrome.runtime.sendMessage(
+                {
+                    action: {
+                        type: "RETURN_AUTO_PICK",
+                        payload: data.pickLoot
+                    }
+                },
+                function (response) {
+                });
+        }
+    });
+}
 
 /**
  * Object example
@@ -55,7 +88,6 @@ function processPlayerMove(movePayload) {
                 bottom: mapMove(movePayload.doors.bottom),
                 right: mapMove(movePayload.doors.right)
             }
-            console.log(movePayload.drops);
             let cell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1];
             cell = updateCell(cell, borders, movePayload.moves, movePayload.drops);
             data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1] = cell;

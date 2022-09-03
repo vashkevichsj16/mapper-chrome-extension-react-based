@@ -12,6 +12,7 @@ setTimeout(function () {
                 }
             },
             function (response) {
+                return true;
             });
     } else if (isLab()) {
         setInterval(function () {
@@ -23,7 +24,7 @@ setTimeout(function () {
                     }
                 },
                 function (response) {
-                    console.log("Send to request to clear the map")
+                    return true;
                 });
         }, 500);
         startPicker();
@@ -34,20 +35,29 @@ setTimeout(function () {
 
 function startPicker() {
     let pickInterval;
-    chrome.storage.local.get("pickLoot", function (data) {
-        if ("pickLoot" in data && data.pickLoot) {
-            pickInterval = setPickingInterval();
-        }
-        chrome.storage.onChanged.addListener(function (changes, namespace) {
-            if ("pickLoot" in changes && changes['pickLoot'].newValue) {
-                console.log("Pick loot change detected, starting")
-                pickInterval = setPickingInterval();
-            } else if ("pickLoot" in changes && !changes['pickLoot'].newValue) {
-                console.log("Pick loot change detected, stopping")
-                clearInterval(pickInterval);
+    chrome.runtime.sendMessage(
+        {
+            action: {
+                type: "GET_AUTO_PICK"
             }
+        },
+        function (response) {
+            return true;
         });
-    });
+    chrome.runtime.onMessage.addListener(
+        function (request, sender, sendResponse) {
+            switch (request.action.type) {
+                case "RETURN_AUTO_PICK" :
+                    if (request.action.payload) {
+                        pickInterval = setPickingInterval();
+
+                    } else if (!request.action.payload) {
+                        clearInterval(pickInterval);
+                    }
+                    break;
+            }
+            return true;
+        });
 }
 
 function setPickingInterval() {
