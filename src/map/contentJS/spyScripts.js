@@ -19,7 +19,7 @@ setTimeout(function () {
             chrome.runtime.sendMessage(
                 {
                     action: {
-                        type: "UPDATE_PLAYER_POSITION",
+                        type: "UPDATE_LAB_STATE",
                         payload: getMoves()
                     }
                 },
@@ -34,7 +34,6 @@ setTimeout(function () {
 }, 2000);
 
 function startPicker() {
-    let pickInterval;
     chrome.runtime.sendMessage(
         {
             action: {
@@ -44,21 +43,31 @@ function startPicker() {
         function (response) {
             return true;
         });
-    chrome.runtime.onMessage.addListener(
-        function (request, sender, sendResponse) {
-            switch (request.action.type) {
-                case "RETURN_AUTO_PICK" :
-                    if (request.action.payload) {
-                        pickInterval = setPickingInterval();
-
-                    } else if (!request.action.payload) {
-                        clearInterval(pickInterval);
-                    }
-                    break;
-            }
-            return true;
-        });
 }
+
+let pickInterval;
+chrome.runtime.onMessage.addListener(
+    function (request, sender, sendResponse) {
+        switch (request.action.type) {
+            case "RETURN_AUTO_PICK" :
+                if (request.action.payload && isLab()) {
+                    pickInterval = setPickingInterval();
+
+                } else if (!request.action.payload) {
+                    clearInterval(pickInterval);
+                }
+                break;
+            case "CHANGE_AUTO_MOVE" :
+                if (request.action.payload && isLab()) {
+                    pickInterval = setPickingInterval();
+
+                } else if (!request.action.payload) {
+                    clearInterval(pickInterval);
+                }
+                break;
+        }
+        return true;
+    });
 
 function setPickingInterval() {
     return setInterval(function () {

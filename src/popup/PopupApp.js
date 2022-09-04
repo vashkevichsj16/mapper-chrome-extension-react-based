@@ -113,8 +113,8 @@ function PopupApp({data}) {
                                 action: {
                                     type: "CLEAR_THE_MAP",
                                     payload: {
-                                        x: 30,
-                                        y: 30
+                                        x: 100,
+                                        y: 100
                                     }
                                 }
                             },

@@ -9,8 +9,8 @@ chrome.runtime.onMessage.addListener(
             case "CLEAR_THE_MAP" :
                 startTheMap(request.action.payload.x, request.action.payload.y);
                 break;
-            case "UPDATE_PLAYER_POSITION" :
-                processPlayerMove(request.action.payload);
+            case "UPDATE_LAB_STATE" :
+                processLabState(request.action.payload);
                 break;
             case "UPDATE_PLAYER_FIGHT_UNITS" :
                 updateAvailableUnits(request.action.payload);
@@ -79,50 +79,79 @@ function getAutoPick() {
         moves: moves
     }
  */
-function processPlayerMove(movePayload) {
+function processLabState(movePayload) {
     chrome.storage.local.get("mapModel", function (data) {
-        if (data.mapModel) {
+        if (model) {
+            let model = model;
+            const lvl = model.playerPosition.lvl;
             const borders = {
                 top: mapMove(movePayload.doors.top),
                 left: mapMove(movePayload.doors.left),
                 bottom: mapMove(movePayload.doors.bottom),
                 right: mapMove(movePayload.doors.right)
             }
-            let cell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1];
+            let cell = model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1];
+            if (playerHaveMoved()) {
+                increaseVisits()
+            }
             cell = updateCell(cell, borders, movePayload.moves, movePayload.drops);
-            data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1] = cell;
-            console.log(data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1]);
-
-            if (movePayload.playerPosition.y < data.mapModel.labSize.y) {
-                let bottomCell = data.mapModel.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1];
-                updateCell(bottomCell, {top: borders.bottom}, bottomCell.moves);
-                data.mapModel.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1] = bottomCell;
-            }
-            if (movePayload.playerPosition.x < data.mapModel.labSize.x) {
-                let rightCell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x];
-                updateCell(rightCell, {left: borders.right}, rightCell.moves);
-                data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x] = rightCell;
-            }
-            if (movePayload.playerPosition.y > 1) {
-                let topCell = data.mapModel.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1];
-                updateCell(topCell, {bottom: borders.top}, topCell.moves);
-                data.mapModel.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1] = topCell;
-            }
-            if (movePayload.playerPosition.x > 1) {
-                let leftCell = data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2];
-                updateCell(leftCell, {right: borders.left}, leftCell.moves);
-                data.mapModel.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2] = leftCell;
-            }
-            chrome.storage.local.set(
-                {
-                    mapModel: data.mapModel,
-                    playerPosition: movePayload.playerPosition
-                }, function () {
-                    console.log('Updating Map');
-                }
-            );
+            model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 1] = cell;
+            updateBottomCell(movePayload, model);
+            updateRightCellCell(movePayload, model);
+            updateTopCell(movePayload, model);
+            updateLeftCellCell(movePayload, model);
+            updateMapModel(model);
         }
     });
+}
+
+function updateBottomCell(movePayload, model) {
+    if (movePayload.playerPosition.y < model.labSize.y) {
+        let bottomCell = model.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1];
+        updateCell(bottomCell, {top: borders.bottom}, bottomCell.moves);
+        model.cells[movePayload.playerPosition.y][movePayload.playerPosition.x - 1] = bottomCell;
+    }
+}
+function updateTopCell(movePayload, model) {
+    if (movePayload.playerPosition.y > 1) {
+        let topCell = model.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1];
+        updateCell(topCell, {bottom: borders.top}, topCell.moves);
+        model.cells[movePayload.playerPosition.y - 2][movePayload.playerPosition.x - 1] = topCell;
+    }
+}
+function updateRightCellCell(movePayload, model) {
+    if (movePayload.playerPosition.x < model.labSize.x) {
+        let rightCell = model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x];
+        updateCell(rightCell, {left: borders.right}, rightCell.moves);
+        model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x] = rightCell;
+    }
+}
+function updateLeftCellCell(movePayload, model) {
+    if (movePayload.playerPosition.x > 1) {
+        let leftCell = model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2];
+        updateCell(leftCell, {right: borders.left}, leftCell.moves);
+        model.cells[movePayload.playerPosition.y - 1][movePayload.playerPosition.x - 2] = leftCell;
+    }
+}
+
+function playerHaveMoved(currentPosition, lastPosition) {
+    return !(currentPosition.x === lastPosition.x 
+        && currentPosition.y === lastPosition.y
+        && currentPosition.lvl === lastPosition.lvl);
+}
+
+function increaseVisits(cell) {
+    cell.visited = cell.visited + 1;
+}
+
+function updateMapModel(mapModel) {
+    chrome.storage.local.set(
+        {
+            mapModel: mapModel
+        },
+        function () {
+        }
+    );
 }
 
 function updateCell(cell, borders, moves, drops = cell.drops) {
@@ -165,7 +194,8 @@ function createCells(x, y) {
                 x: j + 1,
                 y: i + 1,
                 borders: {},
-                moves: {}
+                moves: {},
+                visited: 0
             });
         }
     }
