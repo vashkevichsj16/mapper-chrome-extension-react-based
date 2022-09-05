@@ -81,8 +81,8 @@ function getAutoPick() {
  */
 function processLabState(movePayload) {
     chrome.storage.local.get("mapModel", function (data) {
-        if (model) {
-            let model = model;
+        if (data.mapModel) {
+            let model = data.mapModel;
             const lvl = model.playerPosition.lvl;
             const borders = {
                 top: mapMove(movePayload.doors.top),
